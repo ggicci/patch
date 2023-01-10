@@ -2,13 +2,11 @@
 
 This package aims to answer the question asked when implementing **PATCH** requests of RESTful API in Go:
 
-<div align="center">
-    <p style="font-weight: bold;">
-        Q: How to tell if a field is missing in the payload of a PATCH request?
-    </p>
-</div>
+<p align="center">
+    <b>Q: How to tell if a field is missing in the payload of a PATCH request?</b>
+</p>
 
-Since we are using generics, **Go 1.8+ is required**.
+Since we are using generics, **Go 1.18+ is required**.
 
 ---
 
