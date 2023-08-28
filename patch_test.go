@@ -189,7 +189,7 @@ func TestFieldUint8Array(t *testing.T) {
 	shouldResemble(t, `"AQID"`, string(out), "marshal Field[[]uint8] failed")
 }
 
-func TestPatchStructs(t *testing.T) {
+func TestField_UnmarshalJSON_Struct(t *testing.T) {
 	var testcases = []testcase{
 		{
 			`{"email":"ggicci.2@example.com","tags":["artist","photographer"]}`,
@@ -205,7 +205,7 @@ func TestPatchStructs(t *testing.T) {
 			AccountPatch{
 				Email:  patch.Field[string]{"", false},
 				Gender: patch.Field[GenderType]{"female", true},
-				Tags:   patch.Field[[]string]{nil, true},
+				Tags:   patch.Field[[]string]{nil, false},
 				GitHub: patch.Field[*GitHubProfile]{&GitHubProfile{
 					Id:        100,
 					Login:     "ggicci.2",
@@ -217,5 +217,23 @@ func TestPatchStructs(t *testing.T) {
 
 	for _, c := range testcases {
 		testJSONUnmarshalling(t, c)
+	}
+}
+
+func TestField_MarshalJSON_Struct(t *testing.T) {
+	var testcases = []testcase{
+		{
+			`{"email":"hello","tags":null,"gender":null,"github":null}`,
+			AccountPatch{
+				Email:  patch.Field[string]{"hello", true},
+				Tags:   patch.Field[[]string]{nil, false},
+				Gender: patch.Field[GenderType]{"", false},
+				GitHub: patch.Field[*GitHubProfile]{nil, false},
+			},
+		},
+	}
+
+	for _, c := range testcases {
+		testJSONMarshalling(t, c)
 	}
 }

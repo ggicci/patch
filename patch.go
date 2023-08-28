@@ -1,6 +1,7 @@
 package patch
 
 import (
+	"bytes"
 	"encoding/json"
 )
 
@@ -13,13 +14,24 @@ type Field[T any] struct {
 }
 
 func (f Field[T]) MarshalJSON() ([]byte, error) {
+	if !f.Valid {
+		return []byte("null"), nil
+	}
 	return json.Marshal(f.Value)
 }
 
 func (f *Field[T]) UnmarshalJSON(data []byte) error {
 	err := json.Unmarshal(data, &f.Value)
-	if err == nil {
+	if err == nil && !bytes.Equal(data, []byte("null")) {
 		f.Valid = true
 	}
 	return err
+}
+
+func (f *Field[T]) SetValid(valid bool) {
+	f.Valid = valid
+}
+
+func (f *Field[T]) IsValid() bool {
+	return f.Valid
 }

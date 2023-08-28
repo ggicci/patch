@@ -10,7 +10,25 @@ Since we are using generics, **Go 1.18+ is required**.
 
 ---
 
+## Definition
+
 Here we only talk about JSON payloads as it's the most frequently used format when developing a RESTful API.
+
+Before implementaion, we need to define what is a missing field?
+
+In this package, a field is defined as a missing field when:
+
+- if the name/key of the field is **not found** in the JSON object
+- **or** the name/key of the field is **present but its value is `null`**, null is interpreted as having no value
+
+For example, in the following two JSON objects, field `Name` is missing:
+
+```json
+{ "Age": 18 }
+{ "Name": null, "Age": 18 }
+```
+
+A Go snippet example:
 
 ```go
 type UserPatch struct {
@@ -51,12 +69,12 @@ func PatchUser(rw http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&payload)
 
 	if !payload.Name.Valid {
-		// error: field "Name" is missing
+		// error: field "Name" is missing (not found or null)
 	}
 }
 ```
 
 Now we can tell **a field is missing** from **a field is empty** by consulting the sentinel `Field.Valid`:
 
-- when `Field.Valid == false`, then _field is missing_
-- when `Field.Valid == true`, then _field is provided_
+- when `Field.Valid == false`, then _field is missing_ or **is null**
+- when `Field.Valid == true`, then _field is provided_ and **is not null**
